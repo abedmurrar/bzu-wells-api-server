@@ -11,10 +11,10 @@ class BaseModel extends DBErrors(Model) {
     $beforeInsert() {
         this.created_at = moment().format(DATETIME_FORMAT);
     }
-
-    $beforeUpdate() {
-        this.updated_at = moment().format(DATETIME_FORMAT);
-    }
+    //
+    // $beforeUpdate() {
+    //     this.updated_at = moment().format(DATETIME_FORMAT);
+    // }
 
     $afterGet() {
         if (this.created_at) {

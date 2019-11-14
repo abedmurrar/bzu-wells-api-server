@@ -21,9 +21,10 @@ class Well extends BaseModel {
     }
 
     static get relationMappings() {
+        const {HasManyRelation} = BaseModel;
         return {
-            well: {
-                relation: BaseModel.HasManyRelation,
+            readings: {
+                relation: HasManyRelation,
                 modelClass: 'Reading',
                 join: {
                     from: 'wells.id',

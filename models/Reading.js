@@ -7,7 +7,6 @@ class Reading extends BaseModel {
     }
 
     $beforeInsert() {
-        // super.$beforeInsert();
         this.volume = this.reading * 2;
         this.height = this.reading * 3;
     }
@@ -21,16 +20,17 @@ class Reading extends BaseModel {
                 reading: {type: 'number'},
                 height: {type: 'integer'},
                 volume: {type: 'number'},
-                well_id:{type:'integer'}
+                well_id: {type: 'integer'}
             },
             additionalProperties: false
         };
     }
 
     static get relationMappings() {
+        const {BelongsToOneRelation} = BaseModel;
         return {
             well: {
-                relation: BaseModel.BelongsToOneRelation,
+                relation: BelongsToOneRelation,
                 modelClass: 'Well',
                 join: {
                     from: 'readings.well_id',
