@@ -1,3 +1,4 @@
+const createError = require('http-errors');
 const {User} = require('../models');
 
 class UserController {
@@ -92,6 +93,23 @@ class UserController {
                 .findById(req.params.id)
                 .throwIfNotFound();
             res.json(null);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async login(req, res, next) {
+        try {
+            const {username, password} = req.body;
+            const user = await User.query()
+                .select()
+                .where('username', username)
+                .first()
+                .throwIfNotFound();
+            const hash = crypto.pbkdf2Sync(password, user.salt, 100, 32, 'sha256').toString('hex');
+            if (user.password === hash)
+                return res.json(user);
+            next(createError(403, 'username of password incorrect'));
         } catch (err) {
             next(err);
         }
