@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {UserController} = require('../controllers');
-
+const {newUserValidation} = require('./middlewares');
 /**
  * GET
  */
@@ -13,10 +13,8 @@ router.get('/:id', UserController.getUserById);
  * POST
  */
 
-router.post('/', UserController.createUser);
-router.post('/login', (req, res, next) => {
-
-});
+router.post('/', newUserValidation, UserController.createUser);
+router.post('/login', UserController.login);
 
 /**
  * PUT
