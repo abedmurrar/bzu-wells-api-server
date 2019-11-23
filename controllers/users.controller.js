@@ -1,5 +1,7 @@
 const createError = require('http-errors');
+const crypto = require('crypto');
 const {User} = require('../models');
+const {validationResult} = require('express-validator');
 
 class UserController {
     /**
@@ -50,6 +52,11 @@ class UserController {
      * @returns {Promise<void>}
      */
     static async createUser(req, res, next) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            console.log(req.body.first_name.length)
+            return res.status(422).json({errors: errors.array()});
+        }
         try {
             const createdUser = await User.query().insertGraphAndFetch(req.body);
             res.json(createdUser);
@@ -109,7 +116,7 @@ class UserController {
             const hash = crypto.pbkdf2Sync(password, user.salt, 100, 32, 'sha256').toString('hex');
             if (user.password === hash)
                 return res.json(user);
-            next(createError(403, 'username of password incorrect'));
+            return next(createError(403, 'username of password incorrect'));
         } catch (err) {
             next(err);
         }

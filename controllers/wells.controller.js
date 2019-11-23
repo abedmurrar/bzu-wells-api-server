@@ -89,8 +89,11 @@ class WellController {
     static async createWellReading(req, res, next) {
         try {
             const reading = req.body;
-            reading.well_id = req.params.id;
-            const createdReading = await Reading.query().insertGraphAndFetch(reading);
+            reading.well_id = parseInt(req.params.id);
+            const createdReading = await Reading.query()
+                .insertGraph(reading)
+                .eager('well')
+                .throwIfNotFound();
             res.json(createdReading);
         } catch (err) {
             next(err);
