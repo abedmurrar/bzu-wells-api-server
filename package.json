@@ -12,6 +12,7 @@
     "ejs": "~2.6.1",
     "express": "^4.16.4",
     "express-session": "^1.17.0",
+    "express-validator": "^6.2.0",
     "helmet": "^3.21.2",
     "http-errors": "~1.6.3",
     "knex": "^0.20.1",
