@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {WellController} = require('../controllers');
-const {isLogged, newWellValidation, readingValidation} = require("./middlewares");
+const {isLogged, isAdmin, newWellValidation, readingValidation} = require("./middlewares");
 /**
  * GET
  */
@@ -14,19 +14,19 @@ router.get('/:id/readings', isLogged, WellController.getWellReadingsById);
  * POST
  */
 
-router.post('/', isLogged, newWellValidation, WellController.createWell);
+router.post('/', isAdmin, newWellValidation, WellController.createWell);
 router.post('/:id/readings', isLogged, readingValidation, WellController.createWellReading);
 
 /**
  * PUT
  */
 
-router.put('/:id', isLogged, WellController.updateWellById);
+router.put('/:id', isAdmin, WellController.updateWellById);
 
 /**
  * DELETE
  */
 
-router.delete('/:id', isLogged, WellController.softDeleteWellById);
+router.delete('/:id', isAdmin, WellController.softDeleteWellById);
 
 module.exports = router;

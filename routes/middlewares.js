@@ -1,11 +1,33 @@
 const {body, sanitizeBody, check} = require('express-validator');
 const createError = require('http-errors');
+const {NOT_AUTHORIZED,FORBIDDEN} = require('../helpers/http-status-codes');
 
 const isLogged = (req, res, next) => {
-    if (req.session.user && req.session.user.id) {
+    const {session:{user=null}} = req;
+
+    if (user && user.id) {
         next();
     } else {
-        next(createError(401, "Not authorized"));
+        next(createError(NOT_AUTHORIZED, "Not authorized"));
+    }
+};
+
+const isNotLogged = (req, res, next) => {
+    const {session:{user=null}} = req;
+
+    if (!(user && user.id)) {
+        next();
+    } else {
+        next(createError(FORBIDDEN, "Forbidden"));
+    }
+};
+
+const isAdmin = (req, res, next) => {
+    const {session:{user=null}} = req;
+    if (user && user.id && user.role === 'admin') {
+        next();
+    } else {
+        next(createError(FORBIDDEN, "Forbidden"));
     }
 };
 
@@ -68,6 +90,8 @@ const newWellValidation = [
 ];
 
 module.exports = {
+    isAdmin,
+    isNotLogged,
     isLogged,
     newUserValidation,
     readingValidation,

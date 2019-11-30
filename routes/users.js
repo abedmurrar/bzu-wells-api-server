@@ -1,31 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const {UserController} = require('../controllers');
-const {newUserValidation} = require('./middlewares');
+const {isLogged,isNotLogged, newUserValidation} = require('./middlewares');
 /**
  * GET
  */
 
-router.get('/', UserController.getAllUsers);
-router.get('/:id', UserController.getUserById);
+router.get('/',isLogged, UserController.getAllUsers);
+router.get('/:id',isLogged, UserController.getUserById);
 
 /**
  * POST
  */
 
-router.post('/', newUserValidation, UserController.createUser);
-router.post('/login', UserController.login);
+router.post('/',isLogged, newUserValidation, UserController.createUser);
+router.post('/login',isNotLogged, UserController.login);
 
 /**
  * PUT
  */
 
-router.put('/:id', UserController.updateUserById);
+router.put('/:id',isLogged, UserController.updateUserById);
 
 /**
  * DELETE
  */
 
-router.delete('/:id', UserController.softDeleteUserById);
+router.delete('/:id',isLogged, UserController.softDeleteUserById);
 
 module.exports = router;
