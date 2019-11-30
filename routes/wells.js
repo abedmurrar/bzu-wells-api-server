@@ -7,7 +7,7 @@ const {isLogged, isAdmin, newWellValidation, readingValidation} = require("./mid
  */
 
 router.get('/', isLogged, WellController.getAllWells);
-router.get('/:id', isLogged, WellController.getWellById);
+router.get('/:id(\d+)', isLogged, WellController.getWellById);
 router.get('/:id/readings', isLogged, WellController.getWellReadingsById);
 
 /**
@@ -15,18 +15,18 @@ router.get('/:id/readings', isLogged, WellController.getWellReadingsById);
  */
 
 router.post('/', isAdmin, newWellValidation, WellController.createWell);
-router.post('/:id/readings', isLogged, readingValidation, WellController.createWellReading);
+router.post('/:id(\d+)/readings', isLogged, readingValidation, WellController.createWellReading);
 
 /**
  * PUT
  */
 
-router.put('/:id', isAdmin, WellController.updateWellById);
+router.put('/:id(\d+)', isAdmin, WellController.updateWellById);
 
 /**
  * DELETE
  */
 
-router.delete('/:id', isAdmin, WellController.softDeleteWellById);
+router.delete('/:id(\d+)', isAdmin, WellController.softDeleteWellById);
 
 module.exports = router;

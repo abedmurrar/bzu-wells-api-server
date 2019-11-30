@@ -114,12 +114,23 @@ class UserController {
                 .first()
                 .throwIfNotFound();
             const hash = crypto.pbkdf2Sync(password, user.salt, 100, 32, 'sha256').toString('hex');
-            if (user.password === hash)
+            if (user.password === hash) {
+                const {password,salt, ...userAttributes} = user;
+                req.session.user = userAttributes;
                 return res.json(user);
-            return next(createError(403, 'username of password incorrect'));
+            }
+            return next(createError(403, 'Username or password incorrect'));
         } catch (err) {
             next(err);
         }
+    }
+
+    static async logout(req,res,next) {
+        req.session.destroy(err => {
+            if (err)
+                next(err);
+            res.json({message: "Logged out successfully"})
+        });
     }
 }
 

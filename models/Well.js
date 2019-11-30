@@ -9,7 +9,7 @@ class Well extends BaseModel {
     static get jsonSchema() {
         return {
             type: 'object',
-            // required: [],
+            required: ['name','depth','volume'],
             properties: {
                 id: {type: 'integer'},
                 name: {type: 'string'},

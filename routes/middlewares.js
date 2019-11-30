@@ -31,6 +31,15 @@ const isAdmin = (req, res, next) => {
     }
 };
 
+const isSameUser = (req, res, next) => {
+    const {session:{user=null}} = req;
+    if (user && user.id && parseInt(req.params.id) === user.id) {
+        next();
+    } else {
+        next(createError(FORBIDDEN, "Forbidden"));
+    }
+};
+
 const newUserValidation = [
     check('first_name')
         .not()
@@ -93,6 +102,7 @@ module.exports = {
     isAdmin,
     isNotLogged,
     isLogged,
+    isSameUser,
     newUserValidation,
     readingValidation,
     newWellValidation

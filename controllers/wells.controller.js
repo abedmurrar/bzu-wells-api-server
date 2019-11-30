@@ -15,7 +15,9 @@ class WellController {
         try {
             const wells = await Well.query()
                 .select()
+                .column(['id', 'name', 'depth', 'volume'])
                 .where('is_active', true)
+                .eager('readings')
                 .throwIfNotFound();
             res.json(wells)
         } catch (err) {
@@ -81,6 +83,11 @@ class WellController {
 
     /**
      * Create a reading for an existing well
+     * POST
+     * for example:
+     * {
+     *     "reading":3.5
+     * }
      * @param req
      * @param res
      * @param next
@@ -88,10 +95,11 @@ class WellController {
      */
     static async createWellReading(req, res, next) {
         try {
-            const reading = req.body;
-            reading.well_id = parseInt(req.params.id);
+            const readingObject = req.body;
+            readingObject.reading /= 100; // Conversion centimeter to meter
+            readingObject.well_id = parseInt(req.params.id);
             const createdReading = await Reading.query()
-                .insertGraph(reading)
+                .insertGraph(readingObject)
                 .eager('well')
                 .throwIfNotFound();
             res.json(createdReading);
