@@ -1,4 +1,4 @@
-const {Well, Reading} = require('../models');
+const { Well, Reading } = require('../models');
 
 /**
  * Well Controller for handling requests
@@ -19,7 +19,7 @@ class WellController {
                 .where('is_active', true)
                 .eager('readings')
                 .throwIfNotFound();
-            res.json(wells)
+            res.json(wells);
         } catch (err) {
             next(err);
         }
@@ -38,7 +38,7 @@ class WellController {
                 .findById(req.params.id)
                 .where('is_active', true)
                 .throwIfNotFound();
-            res.json(well)
+            res.json(well);
         } catch (err) {
             next(err);
         }
@@ -59,7 +59,7 @@ class WellController {
                 .eager('readings')
                 .modifyEager('readings', builder => builder.limit(100))
                 .throwIfNotFound();
-            res.json(wellWithReadings)
+            res.json(wellWithReadings);
         } catch (err) {
             next(err);
         }
@@ -95,11 +95,10 @@ class WellController {
      */
     static async createWellReading(req, res, next) {
         try {
-            const readingObject = req.body;
-            readingObject.reading /= 100; // Conversion centimeter to meter
-            readingObject.well_id = parseInt(req.params.id);
+            const { reading } = req.body;
+            const wellId = parseInt(req.params.id, 10);
             const createdReading = await Reading.query()
-                .insertGraph(readingObject)
+                .insertGraph({ reading: reading / 100 /* cm to m */, well_id: wellId })
                 .eager('well')
                 .throwIfNotFound();
             res.json(createdReading);
@@ -117,8 +116,7 @@ class WellController {
      */
     static async updateWellById(req, res, next) {
         try {
-            const updatedWell = await Well
-                .query()
+            const updatedWell = await Well.query()
                 .patchAndFetchById(req.params.id, req.body)
                 .where('is_active', true)
                 .throwIfNotFound();
@@ -137,9 +135,8 @@ class WellController {
      */
     static async softDeleteWellById(req, res, next) {
         try {
-            await Well
-                .query()
-                .patch({is_active: false})
+            await Well.query()
+                .patch({ is_active: false })
                 .findById(req.params.id)
                 .throwIfNotFound();
             res.json(null);
