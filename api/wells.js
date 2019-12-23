@@ -1,7 +1,10 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable no-useless-escape */
 const express = require('express');
+
 const router = express.Router();
-const {WellController} = require('../controllers');
-const {isLogged, isAdmin, newWellValidation, readingValidation} = require("./middlewares");
+const { WellController } = require('../controllers');
+const { isLogged,isLoggedOrHashSent, isAdmin, newWellValidation, readingValidation } = require('./middlewares');
 /**
  * GET
  */
@@ -15,7 +18,7 @@ router.get('/:id/readings', isLogged, WellController.getWellReadingsById);
  */
 
 router.post('/', isAdmin, newWellValidation, WellController.createWell);
-router.post('/:id(\d+)/readings', isLogged, readingValidation, WellController.createWellReading);
+router.post('/:id(\d+)/readings', isLoggedOrHashSent, readingValidation, WellController.createWellReading);
 
 /**
  * PUT

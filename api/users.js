@@ -9,13 +9,13 @@ const {isLogged, isAdmin, isNotLogged, isSameUser, newUserValidation} = require(
 
 router.get('/', isLogged, UserController.getAllUsers);
 router.get('/:id(\d+)', isLogged, UserController.getUserById);
-
+router.get('/logout', isLogged, UserController.logout);
 /**
  * POST
  */
 
 router.post('/', isAdmin, newUserValidation, UserController.createUser);
-router.post('/login', isNotLogged, UserController.login);
+router.post('/login', /*isNotLogged,*/ UserController.login);
 
 /**
  * PUT
