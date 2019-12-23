@@ -34,7 +34,7 @@ module.exports = {
         },
         migrations: {
             directory: path.join(__dirname, '/db/migrations/dev/'),
-            tableName: 'knex_migrations',
+            tableName: 'knex_migrations'
         },
         seeds: {
             directory: path.join(__dirname, '/db/seeds')
