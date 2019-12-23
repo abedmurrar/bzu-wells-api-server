@@ -1,7 +1,9 @@
+/* eslint-disable no-plusplus */
+/* eslint-disable no-bitwise */
 const createError = require('http-errors');
 const crypto = require('crypto');
-const {User} = require('../models');
-const {validationResult} = require('express-validator');
+const { validationResult } = require('express-validator');
+const { User } = require('../models');
 
 class UserController {
     /**
@@ -18,7 +20,7 @@ class UserController {
                 .select()
                 .where('is_active', true)
                 .throwIfNotFound();
-            res.json(users)
+            res.json(users);
         } catch (err) {
             next(err);
         }
@@ -38,7 +40,7 @@ class UserController {
                 .findById(req.params.id)
                 .where('is_active', true)
                 .throwIfNotFound();
-            res.json(user)
+            res.json(user);
         } catch (err) {
             next(err);
         }
@@ -54,8 +56,7 @@ class UserController {
     static async createUser(req, res, next) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            console.log(req.body.first_name.length)
-            return res.status(422).json({errors: errors.array()});
+            return res.status(422).json({ errors: errors.array() });
         }
         try {
             const createdUser = await User.query().insertGraphAndFetch(req.body);
@@ -74,8 +75,7 @@ class UserController {
      */
     static async updateUserById(req, res, next) {
         try {
-            const updatedUser = await User
-                .query()
+            const updatedUser = await User.query()
                 .patchAndFetchById(req.params.id, req.body)
                 .where('is_active', true)
                 .throwIfNotFound();
@@ -94,9 +94,8 @@ class UserController {
      */
     static async softDeleteUserById(req, res, next) {
         try {
-            await User
-                .query()
-                .patch({is_active: false})
+            await User.query()
+                .patch({ is_active: false })
                 .findById(req.params.id)
                 .throwIfNotFound();
             res.json(null);
@@ -107,16 +106,26 @@ class UserController {
 
     static async login(req, res, next) {
         try {
-            const {username, password} = req.body;
+            const { username, password: entryPassword } = req.body;
             const user = await User.query()
                 .select()
                 .where('username', username)
                 .first()
                 .throwIfNotFound();
-            const hash = crypto.pbkdf2Sync(password, user.salt, 100, 32, 'sha256').toString('hex');
-            if (user.password === hash) {
-                const {password,salt, ...userAttributes} = user;
+            const hash = crypto
+                .pbkdf2Sync(entryPassword, user.salt, 100, 32, 'sha256')
+                .toString('hex');
+            let mismatch = 0;
+            for (let i = 0; i < hash.length; ++i) {
+                mismatch |= hash.charCodeAt(i) ^ user.password.charCodeAt(i);
+                if (mismatch) {
+                    break;
+                }
+            }
+            if (!mismatch) {
+                const { password, salt, ...userAttributes } = user;
                 req.session.user = userAttributes;
+                req.session.save(() => console.log('session saved'));
                 return res.json(user);
             }
             return next(createError(403, 'Username or password incorrect'));
@@ -125,11 +134,10 @@ class UserController {
         }
     }
 
-    static async logout(req,res,next) {
+    static async logout(req, res, next) {
         req.session.destroy(err => {
-            if (err)
-                next(err);
-            res.json({message: "Logged out successfully"})
+            if (err) next(err);
+            res.status(200).json({ message: 'Logged out successfully' });
         });
     }
 }
