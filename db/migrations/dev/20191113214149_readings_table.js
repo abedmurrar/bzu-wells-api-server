@@ -4,7 +4,10 @@ exports.up = knex => {
     return knex.schema.hasTable(tableName).then(exists => {
         if (!exists) {
             return knex.schema.createTable(tableName, table => {
-                table.increments('id').primary().notNullable();
+                table
+                    .increments('id')
+                    .primary()
+                    .notNullable();
                 table.float('reading').notNullable();
                 table.integer('height').notNullable();
                 table.float('volume', 6).notNullable();
@@ -18,7 +21,6 @@ exports.up = knex => {
                     .defaultTo(knex.raw('CURRENT_TIMESTAMP'));
                 table.boolean('is_active').defaultTo(true);
 
-
                 table
                     .foreign('well_id', 'idwells_idx')
                     .references('id')
@@ -27,7 +29,7 @@ exports.up = knex => {
                     .onUpdate('NO ACTION');
             });
         }
-    })
+    });
 };
 
 exports.down = knex => {

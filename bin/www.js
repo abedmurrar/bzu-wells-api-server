@@ -1,7 +1,7 @@
 /* Module dependencies. */
-const app = require('../app');
 const debug = require('debug')('bzu-wells-server-api:server');
 const http = require('http');
+const app = require('../app');
 
 /* Get port from environment and store in Express. */
 const port = normalizePort(process.env.PORT || '3000');
@@ -34,17 +34,15 @@ function onError(error) {
     if (error.syscall !== 'listen') {
         throw error;
     }
-    const bind = typeof port === 'string'
-        ? 'Pipe ' + port
-        : 'Port ' + port;
+    const bind = typeof port === 'string' ? `Pipe ${port}` : `Port ${port}`;
     // handle specific listen errors with friendly messages
     switch (error.code) {
         case 'EACCES':
-            console.error(bind + ' requires elevated privileges');
+            console.error(`${bind} requires elevated privileges`);
             process.exit(1);
             break;
         case 'EADDRINUSE':
-            console.error(bind + ' is already in use');
+            console.error(`${bind} is already in use`);
             process.exit(1);
             break;
         default:
@@ -55,8 +53,6 @@ function onError(error) {
 /* Event listener for HTTP server "listening" event. */
 function onListening() {
     const addr = server.address();
-    const bind = typeof addr === 'string'
-        ? 'pipe ' + addr
-        : 'port ' + addr.port;
-    debug('Listening on ' + bind);
+    const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
+    debug(`Listening on ${bind}`);
 }
