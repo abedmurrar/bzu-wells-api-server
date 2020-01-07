@@ -1,7 +1,9 @@
+/* eslint-disable no-useless-escape */
 const express = require('express');
+
 const router = express.Router();
-const {UserController} = require('../controllers');
-const {isLogged, isAdmin, isNotLogged, isSameUser, newUserValidation} = require('./middlewares');
+const { UserController } = require('../controllers');
+const { isLogged, isAdmin, isNotLogged, isSameUser, newUserValidation } = require('./middlewares');
 
 /**
  * GET
@@ -15,7 +17,7 @@ router.get('/logout', isLogged, UserController.logout);
  */
 
 router.post('/', isAdmin, newUserValidation, UserController.createUser);
-router.post('/login', /*isNotLogged,*/ UserController.login);
+router.post('/login', /* isNotLogged, */ UserController.login);
 
 /**
  * PUT
