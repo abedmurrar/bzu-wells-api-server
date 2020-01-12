@@ -40,7 +40,7 @@ bower_components
 .lock-wscript
 
 # Compiled binary addons (https://nodejs.org/api/addons.html)
-build/Release
+views/Release
 
 # Dependency directories
 node_modules/
@@ -74,16 +74,16 @@ typings/
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 
-# next.js build output
+# next.js views output
 .next
 
-# nuxt.js build output
+# nuxt.js views output
 .nuxt
 
 # react / gatsby
 public/
 
-# vuepress build output
+# vuepress views output
 .vuepress/dist
 
 # Serverless directories
@@ -325,7 +325,7 @@ _ReSharper*/
 # JustCode is a .NET coding add-in
 .JustCode
 
-# TeamCity is a build add-in
+# TeamCity is a views add-in
 _TeamCity*
 
 # DotCover is a Code Coverage Tool
@@ -386,7 +386,7 @@ PublishScripts/
 *.snupkg
 # The packages folder can be ignored because of Package Restore
 **/[Pp]ackages/*
-# except build/, which is used as an MSBuild target.
+# except views/, which is used as an MSBuild target.
 !**/[Pp]ackages/build/
 # Uncomment if necessary however generally it will be regenerated when needed
 #!**/[Pp]ackages/repositories.config
@@ -472,7 +472,7 @@ FakesAssemblies/
 # Node.js Tools for Visual Studio
 .ntvs_analysis.dat
 
-# Visual Studio 6 build log
+# Visual Studio 6 views log
 *.plg
 
 # Visual Studio 6 workspace options file
@@ -481,7 +481,7 @@ FakesAssemblies/
 # Visual Studio 6 auto-generated workspace file (contains which files were open etc.)
 *.vbw
 
-# Visual Studio LightSwitch build output
+# Visual Studio LightSwitch views output
 **/*.HTMLClient/GeneratedArtifacts
 **/*.DesktopClient/GeneratedArtifacts
 **/*.DesktopClient/ModelManifest.xml
@@ -513,7 +513,7 @@ __pycache__/
 # Telerik's JustMock configuration file
 *.jmconfig
 
-# BizTalk build output
+# BizTalk views output
 *.btp.cs
 *.btm.cs
 *.odx.cs

@@ -5,7 +5,7 @@ module.exports = {
         client: 'sqlite3',
         debug: true,
         connection: {
-            filename: './dev.sqlite3'
+            filename: path.resolve('./dev.sqlite3')
         },
         log: {
             debug(message) {
@@ -33,25 +33,25 @@ module.exports = {
             }
         },
         migrations: {
-            directory: path.join(__dirname, '/db/migrations/dev/'),
+            directory: path.resolve('db', 'migrations', 'dev'),
             tableName: 'knex_migrations'
         },
         seeds: {
-            directory: path.join(__dirname, '/db/seeds')
+            directory: path.resolve('db', 'seeds')
         }
     },
     production: {
         client: 'sqlite3',
         debug: false,
         connection: {
-            filename: './production.sqlite3'
+            filename: path.resolve('./production.sqlite3')
         },
         migrations: {
-            directory: path.join(__dirname, '/db/migrations/production/'),
+            directory: path.resolve('migrations'),
             tableName: 'knex_migrations_production'
         },
-        seeds: {
-            directory: path.join(__dirname, '/db/seeds')
-        }
+        // seeds: {
+        //     directory: path.join(__dirname, 'db', 'seeds')
+        // }
     }
 };

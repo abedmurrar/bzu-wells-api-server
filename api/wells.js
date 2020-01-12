@@ -10,7 +10,7 @@ const { isLogged,isLoggedOrHashSent, isAdmin, newWellValidation, readingValidati
  */
 
 router.get('/', isLogged, WellController.getAllWells);
-router.get('/:id(\d+)', isLogged, WellController.getWellById);
+router.get('/:id', isLogged, WellController.getWellById);
 router.get('/:id/readings', isLogged, WellController.getWellReadingsById);
 
 /**
@@ -18,7 +18,7 @@ router.get('/:id/readings', isLogged, WellController.getWellReadingsById);
  */
 
 router.post('/', isAdmin, newWellValidation, WellController.createWell);
-router.post('/:id(\d+)/readings', isLoggedOrHashSent, readingValidation, WellController.createWellReading);
+router.post('/:id/readings', isLoggedOrHashSent, readingValidation, WellController.createWellReading);
 
 /**
  * PUT

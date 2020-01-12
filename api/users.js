@@ -2,15 +2,15 @@
 const express = require('express');
 
 const router = express.Router();
-const { UserController } = require('../controllers');
-const { isLogged, isAdmin, isNotLogged, isSameUser, newUserValidation } = require('./middlewares');
+const {UserController} = require('../controllers');
+const {isLogged, isAdmin, isNotLogged, isSameUser, newUserValidation} = require('./middlewares');
 
 /**
  * GET
  */
 
 router.get('/', isLogged, UserController.getAllUsers);
-router.get('/:id(\d+)', isLogged, UserController.getUserById);
+router.get('/:id', isLogged, UserController.getUserById);
 router.get('/logout', isLogged, UserController.logout);
 /**
  * POST

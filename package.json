@@ -10,6 +10,7 @@
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
+    "ejs": "^3.0.1",
     "express": "^4.16.4",
     "express-session": "^1.17.0",
     "express-validator": "^6.2.0",
@@ -23,9 +24,6 @@
     "sqlite3": "^4.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.7",
-    "@babel/preset-env": "^7.7.7",
-    "babel-loader": "^8.0.6",
     "eslint": "^6.6.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-config-prettier": "^6.5.0",
@@ -33,9 +31,6 @@
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-security": "^1.4.0",
     "prettier": "^1.19.1",
-    "prettier-eslint": "^9.0.0",
-    "webpack": "^4.41.4",
-    "webpack-cli": "^3.3.10",
-    "webpack-node-externals": "^1.7.2"
+    "prettier-eslint": "^9.0.0"
   }
 }
