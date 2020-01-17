@@ -2,8 +2,15 @@
 const express = require('express');
 
 const router = express.Router();
-const {UserController} = require('../controllers');
-const {isLogged, isAdmin, isNotLogged, isSameUser, newUserValidation} = require('./middlewares');
+const { UserController } = require('../controllers');
+const {
+    isLogged,
+    isAdmin,
+    isNotLogged,
+    isSameUser,
+    newUserValidation,
+    checkValidationErrors
+} = require('./middlewares');
 
 /**
  * GET
@@ -16,19 +23,24 @@ router.get('/:id', isLogged, UserController.getUserById);
  * POST
  */
 
-router.post('/', isAdmin, newUserValidation, UserController.createUser);
-router.post('/login', /* isNotLogged, */ UserController.login);
+router.post('/', isAdmin, newUserValidation, checkValidationErrors, UserController.createUser);
+router.post('/login', isNotLogged, UserController.login);
 
 /**
  * PUT
  */
-
-router.put('/:id(\d+)', isLogged, isSameUser, UserController.updateUserById);
-
+// TODO: admin can update users
+router.put(
+    '/:id',
+    isLogged,
+    isSameUser,
+    /* checkValidationErrors, */ UserController.updateUserById
+);
+router.put('/:id/password', isLogged, isSameUser, UserController.changePassword);
 /**
  * DELETE
  */
 
-router.delete('/:id(\d+)', isAdmin, UserController.softDeleteUserById);
+router.delete('/:id', isAdmin, UserController.softDeleteUserById);
 
 module.exports = router;

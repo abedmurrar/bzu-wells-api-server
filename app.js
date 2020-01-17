@@ -45,7 +45,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(
     session({
-        store: new KnexSessionStore({ knex, tablename: 'sessions' }),
+        store: new KnexSessionStore({
+            knex,
+            tablename: 'sessions',
+            clearInterval: 1000 /* ms */ * 60 /* seconds */ * 60 /* minutes */
+        }),
         resave: true,
         saveUninitialized: false,
         secret: '@@W@@', // TODO: Change it for production
@@ -58,7 +62,7 @@ app.use(
                 60 /* seconds */ *
                 60 /* minutes */ *
                 24 /* hours */ *
-                365 /* days */
+                7 /* days */
         }
     })
 );

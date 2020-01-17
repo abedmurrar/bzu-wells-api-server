@@ -11,6 +11,7 @@ class Reading extends BaseModel {
     }
 
     async $beforeInsert() {
+        await super.$beforeInsert();
         const well = await Well.query()
             .select()
             .first()

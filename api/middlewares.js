@@ -1,11 +1,9 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable no-bitwise */
-const crypto = require('crypto');
-const { body, sanitizeBody, check } = require('express-validator');
+const { body, check, validationResult } = require('express-validator');
 const createError = require('http-errors');
 const { NOT_AUTHORIZED, FORBIDDEN } = require('../helpers/http-status-codes');
-
-const HASH_SALT = '98wejfc0m2m23um289';
+const { isHashCorrect } = require('../helpers/utilFunctions');
 
 const isLogged = (req, res, next) => {
     const {
@@ -26,9 +24,9 @@ const isLoggedOrHashSent = (req, res, next) => {
         params: { id }
     } = req;
 
-    const reading_line = `${id}#${reading}`;
+    const readingLine = `${id}#${reading}`;
 
-    if ((user && user.id) || (hash && isHashCorrect(reading_line, hash))) {
+    if ((user && user.id) || (hash && isHashCorrect(readingLine, hash))) {
         next();
     } else {
         next(createError(NOT_AUTHORIZED, 'Not authorized'));
@@ -127,16 +125,13 @@ const newWellValidation = [
         .withMessage('Volume must be numeric')
 ];
 
-const isHashCorrect = (entry, _hash) => {
-    const hash = crypto.pbkdf2Sync(entry, HASH_SALT, 1000, 32, 'sha256').toString('hex');
-    let mismatch = 0;
-    for (let i = 0, len = hash.length; i < len; i++) {
-        mismatch |= _hash.charCodeAt(i) ^ hash.charCodeAt(i);
-        if (mismatch) {
-            break;
-        }
+const checkValidationErrors = (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
     }
-    return !mismatch;
+
+    next();
 };
 
 module.exports = {
@@ -147,5 +142,6 @@ module.exports = {
     isSameUser,
     newUserValidation,
     readingValidation,
-    newWellValidation
+    newWellValidation,
+    checkValidationErrors
 };

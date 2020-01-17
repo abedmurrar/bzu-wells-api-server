@@ -4,6 +4,7 @@ exports.up = knex => {
     return knex.schema.hasTable(tableName).then(exists => {
         if (!exists) {
             return knex.schema.createTable(tableName, table => {
+                // TODO: change id to bigint
                 table
                     .increments('id')
                     .primary()

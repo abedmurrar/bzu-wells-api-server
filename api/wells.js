@@ -1,10 +1,14 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable no-useless-escape */
 const express = require('express');
 
 const router = express.Router();
 const { WellController } = require('../controllers');
-const { isLogged,isLoggedOrHashSent, isAdmin, newWellValidation, readingValidation } = require('./middlewares');
+const {
+    isLogged,
+    isLoggedOrHashSent,
+    isAdmin,
+    newWellValidation,
+    readingValidation
+} = require('./middlewares');
 /**
  * GET
  */
@@ -18,18 +22,23 @@ router.get('/:id/readings', isLogged, WellController.getWellReadingsById);
  */
 
 router.post('/', isAdmin, newWellValidation, WellController.createWell);
-router.post('/:id/readings', isLoggedOrHashSent, readingValidation, WellController.createWellReading);
+router.post(
+    '/:id/readings',
+    isLoggedOrHashSent,
+    readingValidation,
+    WellController.createWellReading
+);
 
 /**
  * PUT
  */
 
-router.put('/:id(\d+)', isAdmin, WellController.updateWellById);
+router.put('/:id', isAdmin, WellController.updateWellById);
 
 /**
  * DELETE
  */
 
-router.delete('/:id(\d+)', isAdmin, WellController.softDeleteWellById);
+router.delete('/:id', isAdmin, WellController.softDeleteWellById);
 
 module.exports = router;

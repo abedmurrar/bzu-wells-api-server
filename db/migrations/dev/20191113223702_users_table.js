@@ -8,7 +8,10 @@ exports.up = knex => {
                     .increments('id')
                     .primary()
                     .notNullable();
-                table.string('username').notNullable().unique();
+                table
+                    .string('username')
+                    .notNullable()
+                    .unique();
                 table.string('first_name').notNullable();
                 table.string('last_name').notNullable();
                 table.string('password').notNullable();
@@ -27,4 +30,4 @@ exports.up = knex => {
     });
 };
 
-exports.down = (knex) => knex.schema.dropTableIfExists(tableName);
+exports.down = knex => knex.schema.dropTableIfExists(tableName);

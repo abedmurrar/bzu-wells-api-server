@@ -22,7 +22,20 @@ class WellController {
                 .select()
                 .column(['id', 'name', 'depth', 'volume'])
                 .where('is_active', true)
+                .eagerAlgorithm(Well.NaiveEagerAlgorithm)
                 .eager('readings')
+                .modifyEager('readings', builder =>
+                    builder
+                        .select()
+                        .from(function() {
+                            this.select()
+                                .from('readings')
+                                .orderBy('created_at', 'desc')
+                                .as('readings');
+                        })
+                        .orderBy('created_at', 'asc')
+                        .limit(100)
+                )
                 .throwIfNotFound();
             res.json(wells);
         } catch (err) {
@@ -88,7 +101,8 @@ class WellController {
                 .modifyEager('readings', builder =>
                     builder
                         .limit(limit)
-                        .andWhereBetween('created_at', [from, to])
+                        .orderBy('created_at', 'asc')
+                        .whereBetween('created_at', [from, to])
                         .skipUndefined()
                 )
                 .throwIfNotFound();

@@ -2,8 +2,8 @@
 /* eslint-disable no-bitwise */
 const createError = require('http-errors');
 const crypto = require('crypto');
-const { validationResult } = require('express-validator');
 const { User } = require('../models');
+const { isHashCorrect } = require('../helpers/utilFunctions');
 
 class UserController {
     /**
@@ -54,10 +54,6 @@ class UserController {
      * @returns {Promise<void>}
      */
     static async createUser(req, res, next) {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(422).json({ errors: errors.array() });
-        }
         try {
             const createdUser = await User.query().insertGraphAndFetch(req.body);
             res.json(createdUser);
@@ -80,6 +76,41 @@ class UserController {
                 .where('is_active', true)
                 .throwIfNotFound();
             res.json(updatedUser);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    /**
+     * Update an existing user by id
+     * @param req
+     * @param res
+     * @param next
+     * @returns {Promise<void>}
+     */
+    static async changePassword(req, res, next) {
+        try {
+            const { currentPassword, newPassword, confirmPassword } = req.body;
+            const { user } = req.session;
+
+            const currentUser = await User.query()
+                .columns('password', 'salt')
+                .findById(user.id)
+                .where('is_active', true)
+                .throwIfNotFound();
+
+            if (
+                isHashCorrect(currentPassword, currentUser.password, currentUser.salt) &&
+                newPassword === confirmPassword
+            ) {
+                const updatedUser = await User.query()
+                    .patchAndFetchById(user.id, { password: newPassword })
+                    .throwIfNotFound();
+                res.json(updatedUser);
+            } else {
+                // TODO: update this error
+                res.json({ message: 'error' });
+            }
         } catch (err) {
             next(err);
         }
@@ -115,14 +146,7 @@ class UserController {
             const hash = crypto
                 .pbkdf2Sync(entryPassword, user.salt, 100, 32, 'sha256')
                 .toString('hex');
-            let mismatch = 0;
-            for (let i = 0; i < hash.length; ++i) {
-                mismatch |= hash.charCodeAt(i) ^ user.password.charCodeAt(i);
-                if (mismatch) {
-                    break;
-                }
-            }
-            if (!mismatch) {
+            if (isHashCorrect(user.password, hash, user.salt)) {
                 const { password, salt, ...userAttributes } = user;
                 req.session.user = userAttributes;
                 req.session.save(() => console.log('session saved'));
@@ -144,9 +168,8 @@ class UserController {
     static getSession(req, res, next) {
         if (req.session && req.session.user) {
             return res.status(200).json(req.session.user);
-        } else {
-            return next(createError(404, 'No session found'));
         }
+        return next(createError(404, 'No session found'));
     }
 }
 
