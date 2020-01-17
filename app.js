@@ -8,9 +8,9 @@ const cors = require('cors');
 const path = require('path');
 
 /* Session & Database configuration */
-const {Model} = require('objection');
+const { Model } = require('objection');
 const KnexSessionStore = require('connect-session-knex')(session);
-const {wellsRouter, usersRouter} = require('./api');
+const { wellsRouter, usersRouter } = require('./api');
 /* Routes */
 const knex = require('./db/config');
 
@@ -19,9 +19,6 @@ Model.knex(knex);
 /* Start Express App */
 const app = express();
 app.set('trust proxy', 1); // trust first proxy
-app.set('view engine', 'ejs');
-app.use(express.static('public'));
-
 
 /* Middleware */
 app.use(
@@ -45,12 +42,12 @@ app.use(
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(
     session({
-        store: new KnexSessionStore({knex, tablename: 'sessions'}),
+        store: new KnexSessionStore({ knex, tablename: 'sessions' }),
         resave: true,
-        saveUninitialized: true,
+        saveUninitialized: false,
         secret: '@@W@@', // TODO: Change it for production
         name: 'k',
         cookie: {
@@ -69,11 +66,6 @@ app.use(
 app.use('/users', usersRouter);
 app.use('/wells', wellsRouter);
 
-app.get('/', (req, res) => {
-    res.render('index');
-});
-// Default every route except the above to serve the index.ejs
-
 /* Catch 404 and forward to error handler */
 app.use((req, res, next) => next(createError(404)));
 
@@ -85,8 +77,8 @@ app.use((err, req, res, next) => {
     res.locals.error = req.app.get('env') === 'development' ? err : {};
     // render the error page
     res.status(err.status || 500);
-    // res.json({err,message:err.message});
-    res.render('error');
+    res.json({ err, message: err.message });
+    // res.render('error');
 });
 
 module.exports = app;

@@ -1,7 +1,6 @@
 const BaseModel = require('./BaseModel');
 
 class Well extends BaseModel {
-
     static get tableName() {
         return 'wells';
     }
@@ -9,19 +8,19 @@ class Well extends BaseModel {
     static get jsonSchema() {
         return {
             type: 'object',
-            required: ['name','depth','volume'],
+            required: ['name', 'depth', 'volume'],
             properties: {
-                id: {type: 'integer'},
-                name: {type: 'string'},
-                depth: {type: 'number'},
-                volume: {type: 'integer'}
+                id: { type: 'integer' },
+                name: { type: 'string' },
+                depth: { type: 'number' },
+                volume: { type: 'integer' }
             },
             additionalProperties: false
         };
     }
 
     static get relationMappings() {
-        const {HasManyRelation} = BaseModel;
+        const { HasManyRelation } = BaseModel;
         return {
             readings: {
                 relation: HasManyRelation,
@@ -31,7 +30,7 @@ class Well extends BaseModel {
                     to: 'readings.well_id'
                 }
             }
-        }
+        };
     }
 }
 

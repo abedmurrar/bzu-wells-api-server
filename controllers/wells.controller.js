@@ -1,7 +1,8 @@
 const moment = require('moment');
 const createError = require('http-errors');
-const {Well, Reading} = require('../models');
-const {NOT_ACCEPTABLE} = require('../helpers/http-status-codes');
+const { Well, Reading } = require('../models');
+const { NOT_ACCEPTABLE } = require('../helpers/http-status-codes');
+
 const DATETIME_FORMAT = 'YYYY-MM-DD hh:mm:ss';
 
 /**
@@ -42,9 +43,10 @@ class WellController {
             const well = await Well.query()
                 .findById(req.params.id)
                 .where('is_active', true)
-                .modifyEager('readings',
-                    builder => builder.limit(100)
-                        .orderBy('created_at','asc')
+                .modifyEager('readings', builder =>
+                    builder
+                        .limit(100)
+                        .orderBy('created_at', 'asc')
                         .skipUndefined()
                 )
                 .throwIfNotFound();
@@ -64,12 +66,8 @@ class WellController {
     static async getWellReadingsById(req, res, next) {
         try {
             let {
-                params: {id},
-                query: {
-                    from = null,
-                    to = null,
-                    limit = 100
-                }
+                params: { id },
+                query: { from = null, to = null, limit = 100 }
             } = req;
             if (from && to) {
                 from = moment(from).format(DATETIME_FORMAT);
@@ -78,15 +76,18 @@ class WellController {
                     return next(createError(NOT_ACCEPTABLE, 'From date must be before To date'));
                 }
             } else {
-                from = moment().subtract(7, 'd').format(DATETIME_FORMAT);
+                from = moment()
+                    .subtract(7, 'd')
+                    .format(DATETIME_FORMAT);
                 to = moment().format(DATETIME_FORMAT);
             }
             const wellWithReadings = await Well.query()
                 .findById(id)
                 .where('is_active', true)
                 .eager('readings')
-                .modifyEager('readings',
-                    builder => builder.limit(limit)
+                .modifyEager('readings', builder =>
+                    builder
+                        .limit(limit)
                         .andWhereBetween('created_at', [from, to])
                         .skipUndefined()
                 )
@@ -127,10 +128,11 @@ class WellController {
      */
     static async createWellReading(req, res, next) {
         try {
-            const {reading} = req.body;
+            const { reading } = req.body;
             const wellId = parseInt(req.params.id, 10);
+            const _reading = parseInt(reading, 10);
             const createdReading = await Reading.query()
-                .insertGraph({reading: reading / 100 /* cm to m */, well_id: wellId})
+                .insertGraph({ reading: _reading /* cm to m */, well_id: wellId })
                 .eager('well')
                 .throwIfNotFound();
             res.json(createdReading);
@@ -168,7 +170,7 @@ class WellController {
     static async softDeleteWellById(req, res, next) {
         try {
             await Well.query()
-                .patch({is_active: false})
+                .patch({ is_active: false })
                 .findById(req.params.id)
                 .throwIfNotFound();
             res.json(null);

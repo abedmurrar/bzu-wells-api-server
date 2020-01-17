@@ -8,10 +8,10 @@ const {isLogged, isAdmin, isNotLogged, isSameUser, newUserValidation} = require(
 /**
  * GET
  */
-
+router.get('/session', UserController.getSession);
+router.get('/logout', isLogged, UserController.logout);
 router.get('/', isLogged, UserController.getAllUsers);
 router.get('/:id', isLogged, UserController.getUserById);
-router.get('/logout', isLogged, UserController.logout);
 /**
  * POST
  */

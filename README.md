@@ -1,0 +1,3 @@
+## ENVIRONMENT VARIABLES TO Set
+* NODE_ENV production
+* PORT

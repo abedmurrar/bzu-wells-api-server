@@ -134,11 +134,19 @@ class UserController {
         }
     }
 
-    static async logout(req, res, next) {
+    static logout(req, res, next) {
         req.session.destroy(err => {
             if (err) next(err);
             res.status(200).json({ message: 'Logged out successfully' });
         });
+    }
+
+    static getSession(req, res, next) {
+        if (req.session && req.session.user) {
+            return res.status(200).json(req.session.user);
+        } else {
+            return next(createError(404, 'No session found'));
+        }
     }
 }
 
