@@ -1,11 +1,7 @@
-/** @module models/BaseModel */
-
-/* eslint-disable max-classes-per-file */
 const { Model } = require('objection');
 const { DBErrors } = require('objection-db-errors');
 const moment = require('moment');
-
-const DATETIME_FORMAT = 'YYYY-MM-DD hh:mm:ss';
+const { DATETIME_FORMAT } = require('../helpers/constants');
 
 class BaseModel extends DBErrors(Model) {
     $beforeInsert() {

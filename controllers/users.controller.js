@@ -143,10 +143,7 @@ class UserController {
                 .where('username', username)
                 .first()
                 .throwIfNotFound();
-            const hash = crypto
-                .pbkdf2Sync(entryPassword, user.salt, 100, 32, 'sha256')
-                .toString('hex');
-            if (isHashCorrect(user.password, hash, user.salt)) {
+            if (isHashCorrect(entryPassword, user.password, user.salt, 100)) {
                 const { password, salt, ...userAttributes } = user;
                 req.session.user = userAttributes;
                 req.session.save(() => console.log('session saved'));
