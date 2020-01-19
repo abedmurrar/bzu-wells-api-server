@@ -2,15 +2,14 @@ const moment = require('moment');
 const createError = require('http-errors');
 const { Well, Reading } = require('../models');
 const { NOT_ACCEPTABLE } = require('../helpers/http-status-codes');
-
-const DATETIME_FORMAT = 'YYYY-MM-DD hh:mm:ss';
+const { DATETIME_FORMAT } = require('../helpers/constants');
 
 /**
  * Well Controller for handling requests
  */
 class WellController {
     /**
-     * Get All Wells
+     * Get All Wells with their top 100 reading for each well
      * @param req
      * @param res
      * @param next
@@ -24,18 +23,19 @@ class WellController {
                 .where('is_active', true)
                 .eagerAlgorithm(Well.NaiveEagerAlgorithm)
                 .eager('readings')
-                .modifyEager('readings', builder =>
-                    builder
+                .modifyEager('readings', builder => {
+                    const builderCloneQuery = builder
+                        .clone()
                         .select()
-                        .from(function() {
-                            this.select()
-                                .from('readings')
-                                .orderBy('created_at', 'desc')
-                                .as('readings');
-                        })
-                        .orderBy('created_at', 'asc')
+                        .from('readings')
+                        .orderBy('created_at', 'desc')
                         .limit(100)
-                )
+                        .as('readings');
+                    return builder
+                        .select()
+                        .from(builderCloneQuery)
+                        .orderBy('created_at', 'asc');
+                })
                 .throwIfNotFound();
             res.json(wells);
         } catch (err) {
@@ -44,8 +44,7 @@ class WellController {
     }
 
     /**
-     * Get one well by id
-     * with optionnal date filtering
+     * Get one well by id with its last 100 readings
      * @param req
      * @param res
      * @param next
@@ -70,7 +69,7 @@ class WellController {
     }
 
     /**
-     * Get a well's readings
+     * Get a well's readings with date filtering
      * @param req
      * @param res
      * @param next
@@ -114,6 +113,12 @@ class WellController {
 
     /**
      * Create a new well
+     * with request body containing
+     * {
+     *      "name":string,
+     *      "depth":number,
+     *      "volume":number
+     * }
      * @param req
      * @param res
      * @param next
@@ -130,10 +135,9 @@ class WellController {
 
     /**
      * Create a reading for an existing well
-     * POST
-     * for example:
+     * with request body containing
      * {
-     *     "reading":3.5
+     *      "reading":number
      * }
      * @param req
      * @param res
@@ -157,6 +161,12 @@ class WellController {
 
     /**
      * Update an existing well by id
+     * with request body containing at least one of the following
+     * {
+     *      "name":string,
+     *      "depth":number,
+     *      "volume":number
+     * }
      * @param req
      * @param res
      * @param next
