@@ -5,13 +5,11 @@ const session = require('express-session');
 const helmet = require('helmet');
 const createError = require('http-errors');
 const cors = require('cors');
-const path = require('path');
 
 /* Session & Database configuration */
 const { Model } = require('objection');
 const KnexSessionStore = require('connect-session-knex')(session);
 const { wellsRouter, usersRouter } = require('./api');
-/* Routes */
 const knex = require('./db/config');
 
 Model.knex(knex);
@@ -81,8 +79,7 @@ app.use((err, req, res, next) => {
     res.locals.error = req.app.get('env') === 'development' ? err : {};
     // render the error page
     res.status(err.status || 500);
-    res.json({ err, message: err.message });
-    // res.render('error');
+    res.json({ message: err.message });
 });
 
 module.exports = app;
