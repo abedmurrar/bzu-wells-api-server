@@ -17,6 +17,10 @@ exports.up = knex => {
                 table.string('password').notNullable();
                 table.string('salt').notNullable();
                 table
+                    .string('role')
+                    .notNullable()
+                    .defaultTo('user');
+                table
                     .dateTime('created_at')
                     .notNullable()
                     .defaultTo(knex.raw('CURRENT_TIMESTAMP'));

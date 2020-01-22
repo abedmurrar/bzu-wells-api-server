@@ -4,7 +4,10 @@ exports.up = knex => {
     return knex.schema.hasTable(tableName).then(exists => {
         if (!exists) {
             return knex.schema.createTable(tableName, table => {
-                table.increments('id').primary().notNullable();
+                table
+                    .increments('id')
+                    .primary()
+                    .notNullable();
                 table.string('name').notNullable();
                 table.float('depth', 4).notNullable();
                 table.integer('volume', 6).notNullable();
@@ -15,7 +18,7 @@ exports.up = knex => {
                 table.boolean('is_active').defaultTo(true);
             });
         }
-    })
+    });
 };
 
 exports.down = knex => {
