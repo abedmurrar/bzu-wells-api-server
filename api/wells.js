@@ -7,25 +7,36 @@ const {
     isLoggedOrHashSent,
     isAdmin,
     newWellValidation,
-    readingValidation
+    readingValidation,
+    idParamNumeric,
+    checkValidationErrors,
+    errorHandler
 } = require('./middlewares');
 /**
  * GET
  */
 
 router.get('/', isLogged, WellController.getAllWells);
-router.get('/:id', isLogged, WellController.getWellById);
-router.get('/:id/readings', isLogged, WellController.getWellReadingsById);
+router.get('/:id', isLogged, idParamNumeric, checkValidationErrors, WellController.getWellById);
+router.get(
+    '/:id/readings',
+    isLogged,
+    idParamNumeric,
+    checkValidationErrors,
+    WellController.getWellReadingsById
+);
 
 /**
  * POST
  */
 
-router.post('/', isAdmin, newWellValidation, WellController.createWell);
+router.post('/', isAdmin, newWellValidation, checkValidationErrors, WellController.createWell);
 router.post(
     '/:id/readings',
     isLoggedOrHashSent,
+    idParamNumeric,
     readingValidation,
+    checkValidationErrors,
     WellController.createWellReading
 );
 
@@ -33,12 +44,23 @@ router.post(
  * PUT
  */
 
-router.put('/:id', isAdmin, WellController.updateWellById);
+router.put('/:id', isAdmin, idParamNumeric, checkValidationErrors, WellController.updateWellById);
 
 /**
  * DELETE
  */
 
-router.delete('/:id', isAdmin, WellController.softDeleteWellById);
+router.delete(
+    '/:id',
+    isAdmin,
+    idParamNumeric,
+    checkValidationErrors,
+    WellController.softDeleteWellById
+);
+
+/**
+ * Router Middlewares
+ */
+router.use(errorHandler);
 
 module.exports = router;
