@@ -1,11 +1,12 @@
 const moment = require('moment');
 const createError = require('http-errors');
 const { Well, Reading } = require('../models');
-const { NOT_ACCEPTABLE } = require('../helpers/http-status-codes');
+const { OK, CREATED, NO_CONTENT, NOT_ACCEPTABLE } = require('../helpers/http-status-codes');
 const { DATETIME_FORMAT } = require('../helpers/constants');
 
 /**
  * Well Controller for handling requests
+ * /wells
  */
 class WellController {
     /**
@@ -37,7 +38,7 @@ class WellController {
                         .orderBy('created_at', 'asc');
                 })
                 .throwIfNotFound();
-            res.json(wells);
+            res.status(OK).json(wells);
         } catch (err) {
             next(err);
         }
@@ -62,7 +63,7 @@ class WellController {
                         .skipUndefined()
                 )
                 .throwIfNotFound();
-            return res.json(well);
+            return res.status(OK).json(well);
         } catch (err) {
             return next(err);
         }
@@ -105,7 +106,7 @@ class WellController {
                         .skipUndefined()
                 )
                 .throwIfNotFound();
-            res.json(wellWithReadings);
+            res.status(OK).json(wellWithReadings);
         } catch (err) {
             next(err);
         }
@@ -127,7 +128,7 @@ class WellController {
     static async createWell(req, res, next) {
         try {
             const createdWell = await Well.query().insertGraphAndFetch(req.body);
-            res.json(createdWell);
+            res.status(CREATED).json(createdWell);
         } catch (err) {
             next(err);
         }
@@ -146,14 +147,15 @@ class WellController {
      */
     static async createWellReading(req, res, next) {
         try {
-            const { reading } = req.body;
-            const wellId = parseInt(req.params.id, 10);
-            const _reading = parseInt(reading, 10);
+            const {
+                body: { reading },
+                params: { id }
+            } = req;
             const createdReading = await Reading.query()
-                .insertGraph({ reading: _reading /* cm to m */, well_id: wellId })
+                .insertGraph({ reading, well_id: id })
                 .eager('well')
                 .throwIfNotFound();
-            res.json(createdReading);
+            res.status(CREATED).json(createdReading);
         } catch (err) {
             next(err);
         }
@@ -178,7 +180,7 @@ class WellController {
                 .patchAndFetchById(req.params.id, req.body)
                 .where('is_active', true)
                 .throwIfNotFound();
-            res.json(updatedWell);
+            res.status(OK).json(updatedWell);
         } catch (err) {
             next(err);
         }
@@ -197,7 +199,7 @@ class WellController {
                 .patch({ is_active: false })
                 .findById(req.params.id)
                 .throwIfNotFound();
-            res.json(null);
+            res.status(NO_CONTENT).json(null);
         } catch (err) {
             next(err);
         }
