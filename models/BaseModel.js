@@ -4,14 +4,18 @@ const moment = require('moment');
 const { DATETIME_FORMAT } = require('../helpers/constants');
 
 class BaseModel extends DBErrors(Model) {
+    /**
+     * Automatically insert a current date-time value
+     * for any model when a new row is inserted into database
+     */
     $beforeInsert() {
         this.created_at = moment().format(DATETIME_FORMAT);
     }
-    //
-    // $beforeUpdate() {
-    //     this.updated_at = moment().format(DATETIME_FORMAT);
-    // }
 
+    /**
+     * Reformat DATETIME SQL string value
+     * into Date object in JavaScript
+     */
     $afterGet() {
         if (this.created_at) {
             this.created_at = moment(this.created_at).format(DATETIME_FORMAT);
@@ -21,6 +25,10 @@ class BaseModel extends DBErrors(Model) {
         }
     }
 
+    /**
+     * Set ID column to be named as 'id'
+     * for every model
+     */
     static get idColumn() {
         return 'id';
     }

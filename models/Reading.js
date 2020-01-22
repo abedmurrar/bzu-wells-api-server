@@ -2,10 +2,6 @@ const BaseModel = require('./BaseModel');
 const Well = require('./Well');
 
 class Reading extends BaseModel {
-    static get idColumn() {
-        return 'id';
-    }
-
     static get tableName() {
         return 'readings';
     }
