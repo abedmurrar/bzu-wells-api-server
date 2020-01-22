@@ -4,7 +4,12 @@ const createError = require('http-errors');
 const crypto = require('crypto');
 const { User } = require('../models');
 const { isHashCorrect } = require('../helpers/utilFunctions');
+const { OK, CREATED, NO_CONTENT, FORBIDDEN, NOT_FOUND } = require('../helpers/http-status-codes');
 
+/**
+ * Users controller for handling requests
+ * /users
+ */
 class UserController {
     /**
      * Get All Users
@@ -16,11 +21,11 @@ class UserController {
     static async getAllUsers(req, res, next) {
         try {
             const users = await User.query()
-                .columns('id', 'first_name', 'last_name', 'username')
+                .columns('id', 'first_name', 'last_name', 'username', 'role')
                 .select()
                 .where('is_active', true)
                 .throwIfNotFound();
-            res.json(users);
+            res.status(OK).json(users);
         } catch (err) {
             next(err);
         }
@@ -40,7 +45,7 @@ class UserController {
                 .findById(req.params.id)
                 .where('is_active', true)
                 .throwIfNotFound();
-            res.json(user);
+            res.status(OK).json(user);
         } catch (err) {
             next(err);
         }
@@ -56,7 +61,7 @@ class UserController {
     static async createUser(req, res, next) {
         try {
             const createdUser = await User.query().insertGraphAndFetch(req.body);
-            res.json(createdUser);
+            res.status(CREATED).json(createdUser);
         } catch (err) {
             next(err);
         }
@@ -71,11 +76,15 @@ class UserController {
      */
     static async updateUserById(req, res, next) {
         try {
+            const {
+                params: { id }
+            } = req;
             const updatedUser = await User.query()
-                .patchAndFetchById(req.params.id, req.body)
+                .patchAndFetchById(id, req.body)
                 .where('is_active', true)
+                .skipUndefined()
                 .throwIfNotFound();
-            res.json(updatedUser);
+            res.status(OK).json(updatedUser);
         } catch (err) {
             next(err);
         }
@@ -90,27 +99,18 @@ class UserController {
      */
     static async changePassword(req, res, next) {
         try {
-            const { currentPassword, newPassword, confirmPassword } = req.body;
-            const { user } = req.session;
-
-            const currentUser = await User.query()
-                .columns('password', 'salt')
-                .findById(user.id)
-                .where('is_active', true)
+            const {
+                body: { newPassword },
+                session: { user }
+            } = req;
+            const newSalt = crypto.randomBytes(10).toString('hex');
+            const newPasswordHash = crypto
+                .pbkdf2Sync(newPassword, newSalt, 100, 32, 'sha256')
+                .toString('hex');
+            const updatedUser = await User.query()
+                .patchAndFetchById(user.id, { password: newPasswordHash, salt: newSalt })
                 .throwIfNotFound();
-
-            if (
-                isHashCorrect(currentPassword, currentUser.password, currentUser.salt) &&
-                newPassword === confirmPassword
-            ) {
-                const updatedUser = await User.query()
-                    .patchAndFetchById(user.id, { password: newPassword })
-                    .throwIfNotFound();
-                res.json(updatedUser);
-            } else {
-                // TODO: update this error
-                res.json({ message: 'error' });
-            }
+            res.status(OK).json(updatedUser);
         } catch (err) {
             next(err);
         }
@@ -125,16 +125,26 @@ class UserController {
      */
     static async softDeleteUserById(req, res, next) {
         try {
+            const {
+                params: { id }
+            } = req;
+
             await User.query()
                 .patch({ is_active: false })
-                .findById(req.params.id)
+                .findById(id)
                 .throwIfNotFound();
-            res.json(null);
+            res.status(NO_CONTENT).json(null);
         } catch (err) {
             next(err);
         }
     }
 
+    /**
+     * user login using username and password in request body
+     * @param req
+     * @param res
+     * @param next
+     */
     static async login(req, res, next) {
         try {
             const { username, password: entryPassword } = req.body;
@@ -146,27 +156,40 @@ class UserController {
             if (isHashCorrect(entryPassword, user.password, user.salt, 100)) {
                 const { password, salt, ...userAttributes } = user;
                 req.session.user = userAttributes;
-                req.session.save(() => console.log('session saved'));
-                return res.json(user);
+                req.session.save();
+                return res.status(OK).json(user);
             }
-            return next(createError(403, 'Username or password incorrect'));
+            return next(createError(FORBIDDEN, 'Username or password incorrect'));
         } catch (err) {
             next(err);
         }
     }
 
+    /**
+     * Logout user and destroy session
+     * @param req
+     * @param res
+     * @param next
+     */
     static logout(req, res, next) {
         req.session.destroy(err => {
             if (err) next(err);
-            res.status(200).json({ message: 'Logged out successfully' });
+            res.status(OK).json({ message: 'Logged out successfully' });
         });
     }
 
+    /**
+     * get active session for user
+     * if no active session, return 404
+     * @param req
+     * @param res
+     * @param next
+     */
     static getSession(req, res, next) {
         if (req.session && req.session.user) {
-            return res.status(200).json(req.session.user);
+            return res.status(OK).json(req.session.user);
         }
-        return next(createError(404, 'No session found'));
+        return next(createError(NOT_FOUND, 'No session found'));
     }
 }
 
