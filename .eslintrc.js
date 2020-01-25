@@ -3,7 +3,7 @@ module.exports = {
         es6: true,
         node: true
     },
-    extends: ['airbnb-base', 'prettier', 'plugin:security/recommended'],
+    extends: ['import', 'airbnb-base', 'prettier', 'plugin:security/recommended'],
     globals: {
         Atomics: 'readonly',
         SharedArrayBuffer: 'readonly'

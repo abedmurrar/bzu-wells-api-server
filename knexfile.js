@@ -49,7 +49,7 @@ module.exports = {
         migrations: {
             directory: path.resolve('migrations'),
             tableName: 'knex_migrations_production'
-        },
+        }
         // seeds: {
         //     directory: path.join(__dirname, 'db', 'seeds')
         // }

@@ -27,12 +27,7 @@ router.get('/:id', isLogged, idParamNumeric, checkValidationErrors, UserControll
  * POST
  */
 
-router.post(
-    '/',
-    /* isAdmin, */ newUserValidation,
-    checkValidationErrors,
-    UserController.createUser
-);
+router.post('/', isAdmin, newUserValidation, checkValidationErrors, UserController.createUser);
 router.post('/login', isNotLogged, loginValidation, checkValidationErrors, UserController.login);
 
 /**

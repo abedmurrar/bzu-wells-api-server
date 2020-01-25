@@ -1,18 +1,14 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es5",
-    "watch": true
-  },
-  "exclude": [
-    "node_modules"
-  ],
-  "typeAcquisition": {
-    "include": [
-      "jquery"
-    ]
-  },
-  "typingOptions": {
-    "enableAutoDiscovery": true
-  }
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "watch": true
+    },
+    "exclude": ["node_modules"],
+    "typeAcquisition": {
+        "include": ["jquery"]
+    },
+    "typingOptions": {
+        "enableAutoDiscovery": true
+    }
 }
