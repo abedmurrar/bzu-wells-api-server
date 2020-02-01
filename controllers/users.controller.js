@@ -68,6 +68,31 @@ class UserController {
     }
 
     /**
+     * Update logged in user
+     * @param req
+     * @param res
+     * @param next
+     * @returns {Promise<void>}
+     */
+    static async updateMe(req, res, next) {
+        try {
+            const {
+                session: {
+                    user: { id }
+                }
+            } = req;
+            const updatedUser = await User.query()
+                .patchAndFetchById(id, req.body)
+                .where('is_active', true)
+                .skipUndefined()
+                .throwIfNotFound();
+            res.status(OK).json(updatedUser);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    /**
      * Update an existing user by id
      * @param req
      * @param res
@@ -111,6 +136,31 @@ class UserController {
                 .patchAndFetchById(user.id, { password: newPasswordHash, salt: newSalt })
                 .throwIfNotFound();
             res.status(OK).json(updatedUser);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    /**
+     * Soft Delete current user
+     * @param req
+     * @param res
+     * @param next
+     * @returns {Promise<void>}
+     */
+    static async softDeleteMe(req, res, next) {
+        try {
+            const {
+                session: {
+                    user: { id }
+                }
+            } = req;
+
+            await User.query()
+                .patch({ is_active: false })
+                .findById(id)
+                .throwIfNotFound();
+            res.status(NO_CONTENT).json(null);
         } catch (err) {
             next(err);
         }
@@ -174,7 +224,7 @@ class UserController {
     static logout(req, res, next) {
         req.session.destroy(err => {
             if (err) next(err);
-            res.status(OK).json({ message: 'Logged out successfully' });
+            res.status(NO_CONTENT).json(null);
         });
     }
 

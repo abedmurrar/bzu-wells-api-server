@@ -19,42 +19,35 @@ const {
 /**
  * GET
  */
-router.get('/session', UserController.getSession);
+router.get('/me', UserController.getSession);
 router.get('/logout', isLogged, UserController.logout);
 router.get('/', isLogged, UserController.getAllUsers);
 router.get('/:id', isLogged, idParamNumeric, checkValidationErrors, UserController.getUserById);
+
 /**
  * POST
  */
-
 router.post('/', isAdmin, newUserValidation, checkValidationErrors, UserController.createUser);
 router.post('/login', isNotLogged, loginValidation, checkValidationErrors, UserController.login);
 
 /**
  * PUT
  */
-// TODO: admin can update users
+router.put('/me', isLogged, checkValidationErrors, UserController.updateMe);
+router.put('/:id', isAdmin, idParamNumeric, checkValidationErrors, UserController.updateUserById);
 router.put(
-    '/:id',
+    '/me/password',
     isLogged,
-    idParamNumeric,
-    checkValidationErrors,
-    isSameUser('Forbidden, can not update other user'),
-    UserController.updateUserById
-);
-router.put(
-    '/:id/password',
-    isLogged,
-    idParamNumeric,
     changePasswordValidation,
     checkValidationErrors,
-    isSameUser('Forbidden, can not change other user password'),
     UserController.changePassword
 );
+
 /**
  * DELETE
  */
-
+//TODO: close session on success
+router.delete('/me', isLogged, UserController.softDeleteMe);
 router.delete(
     '/:id',
     isAdmin,
