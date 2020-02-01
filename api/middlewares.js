@@ -199,17 +199,14 @@ const loginValidation = [
         .withMessage('Must be at least 20 characters long')
         .trim()
         .escape()
-        .custom()
-        .bail(async (value, { req }) => {
+        .custom(async (value, { req }) => {
             const user = await User.query()
                 .columns('id')
                 .where('username', req.body.username)
                 .first()
                 .throwIfNotFound();
-            if (!isHashCorrect(value, user.password, user.salt, 100)) {
-                throw new Error('Incorrect password');
-            }
-        }),
+        })
+        .bail(),
     body('password')
         .exists()
         .not()
