@@ -45,38 +45,13 @@ class WellController {
     }
 
     /**
-     * Get one well by id with its last 100 readings
-     * @param req
-     * @param res
-     * @param next
-     * @returns {Promise<void>}
-     */
-    static async getWellById(req, res, next) {
-        try {
-            const well = await Well.query()
-                .findById(req.params.id)
-                .where('is_active', true)
-                .modifyEager('readings', builder =>
-                    builder
-                        .limit(100)
-                        .orderBy('created_at', 'asc')
-                        .skipUndefined()
-                )
-                .throwIfNotFound();
-            return res.status(OK).json(well);
-        } catch (err) {
-            return next(err);
-        }
-    }
-
-    /**
      * Get a well's readings with date filtering
      * @param req
      * @param res
      * @param next
      * @returns {Promise<void>}
      */
-    static async getWellReadingsById(req, res, next) {
+    static async getWellById(req, res, next) {
         try {
             let {
                 params: { id },

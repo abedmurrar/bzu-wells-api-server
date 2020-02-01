@@ -18,13 +18,6 @@ const {
 
 router.get('/', isLogged, WellController.getAllWells);
 router.get('/:id', isLogged, idParamNumeric, checkValidationErrors, WellController.getWellById);
-router.get(
-    '/:id/readings',
-    isLogged,
-    idParamNumeric,
-    checkValidationErrors,
-    WellController.getWellReadingsById
-);
 
 /**
  * POST
