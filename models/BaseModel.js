@@ -1,6 +1,7 @@
 const { Model } = require('objection');
 const { DBErrors } = require('objection-db-errors');
 const moment = require('moment');
+const debug = require('debug')('bzu-wells-server-api:base-model');
 const { DATETIME_FORMAT } = require('../helpers/constants');
 
 class BaseModel extends DBErrors(Model) {
@@ -9,6 +10,7 @@ class BaseModel extends DBErrors(Model) {
      * for any model when a new row is inserted into database
      */
     $beforeInsert() {
+        debug('before insert hook called')
         this.created_at = moment().format(DATETIME_FORMAT);
     }
 
@@ -17,6 +19,8 @@ class BaseModel extends DBErrors(Model) {
      * into Date object in JavaScript
      */
     $afterGet() {
+        debug('after get hook called')
+
         if (this.created_at) {
             this.created_at = moment(this.created_at).format(DATETIME_FORMAT);
         }

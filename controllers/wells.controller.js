@@ -1,5 +1,6 @@
 const moment = require('moment');
 const createError = require('http-errors');
+const debug = require('debug')('bzu-wells-server-api:wells-controller');
 const { Well, Reading } = require('../models');
 const { OK, CREATED, NO_CONTENT, NOT_ACCEPTABLE } = require('../helpers/http-status-codes');
 const { DATETIME_FORMAT } = require('../helpers/constants');
@@ -17,6 +18,8 @@ class WellController {
      * @returns {Promise<void>}
      */
     static async getAllWells(req, res, next) {
+        debug('get all wells function called');
+
         try {
             const wells = await Well.query()
                 .select()
@@ -52,6 +55,8 @@ class WellController {
      * @returns {Promise<void>}
      */
     static async getWellById(req, res, next) {
+        debug('get well by id function called');
+
         try {
             let {
                 params: { id },
@@ -101,6 +106,8 @@ class WellController {
      * @returns {Promise<void>}
      */
     static async createWell(req, res, next) {
+        debug('create well function called');
+
         try {
             const createdWell = await Well.query().insertGraphAndFetch(req.body);
             res.status(CREATED).json(createdWell);
@@ -121,6 +128,8 @@ class WellController {
      * @returns {Promise<void>}
      */
     static async createWellReading(req, res, next) {
+        debug('create well reading function called');
+
         try {
             const {
                 body: { reading },
@@ -150,6 +159,8 @@ class WellController {
      * @returns {Promise<void>}
      */
     static async updateWellById(req, res, next) {
+        debug('update well by id function called');
+
         try {
             const updatedWell = await Well.query()
                 .patchAndFetchById(req.params.id, req.body)
@@ -169,6 +180,8 @@ class WellController {
      * @returns {Promise<void>}
      */
     static async softDeleteWellById(req, res, next) {
+        debug('soft delete well by id function called');
+
         try {
             await Well.query()
                 .patch({ is_active: false })

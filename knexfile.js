@@ -1,4 +1,5 @@
 const path = require('path');
+const debug = require('debug')('bzu-wells-server-api:db-config');
 
 module.exports = {
     development: {
@@ -11,7 +12,7 @@ module.exports = {
             debug(message) {
                 if (Array.isArray(message)) {
                     message.forEach(object => {
-                        console.log(
+                        debug(
                             '\x1b[36m',
                             '\x1b[40m',
                             object.sql,
@@ -21,7 +22,7 @@ module.exports = {
                         );
                     });
                 } else {
-                    console.log(
+                    debug(
                         '\x1b[36m',
                         '\x1b[40m',
                         message.sql,

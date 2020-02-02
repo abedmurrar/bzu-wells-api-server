@@ -12,6 +12,15 @@ const {
     checkValidationErrors,
     errorHandler
 } = require('./middlewares');
+
+
+/**
+ * Router Middlewares
+ */
+
+//TODO: inspect error handler
+router.use(errorHandler);
+
 /**
  * GET
  */
@@ -51,9 +60,5 @@ router.delete(
     WellController.softDeleteWellById
 );
 
-/**
- * Router Middlewares
- */
-router.use(errorHandler);
 
 module.exports = router;

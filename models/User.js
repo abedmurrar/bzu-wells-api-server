@@ -1,19 +1,17 @@
 const crypto = require('crypto');
+const debug = require('debug')('bzu-wells-server-api:user-model');
 const BaseModel = require('./BaseModel');
 
 class User extends BaseModel {
     async $beforeInsert() {
+        debug('before insert hook called')
         await super.$beforeInsert();
         this.salt = crypto.randomBytes(10).toString('hex');
         this.password = crypto
             .pbkdf2Sync(this.password, this.salt, 100, 32, 'sha256')
             .toString('hex');
     }
-
-    async $beforeUpdate() {
-        await super.$beforeUpdate();
-    }
-
+    
     static get tableName() {
         return 'users';
     }

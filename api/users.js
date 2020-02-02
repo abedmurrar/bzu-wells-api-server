@@ -16,6 +16,12 @@ const {
     errorHandler
 } = require('./middlewares');
 
+
+/**
+ * Router Middlewares
+ */
+router.use(errorHandler);
+
 /**
  * GET
  */
@@ -56,9 +62,5 @@ router.delete(
     UserController.softDeleteUserById
 );
 
-/**
- * Router Middlewares
- */
-router.use(errorHandler);
 
 module.exports = router;

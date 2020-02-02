@@ -3,6 +3,7 @@
 /* eslint-disable no-bitwise */
 const { body, param, validationResult } = require('express-validator');
 const createError = require('http-errors');
+const debug = require('debug')('bzu-wells-server-api:middlewares');
 const {
     ValidationError,
     NotFoundError,
@@ -35,6 +36,7 @@ const { isHashCorrect } = require('../helpers/utilFunctions');
  * @param next
  */
 const isLogged = (req, res, next) => {
+    debug('is logged middleware called');
     const {
         session: { user = null }
     } = req;
@@ -62,6 +64,8 @@ const isLogged = (req, res, next) => {
  * @param next
  */
 const isLoggedOrHashSent = (req, res, next) => {
+    debug('is logged or hash sent middleware called');
+
     const {
         session: { user = null },
         body: { hash = null, reading },
@@ -87,6 +91,8 @@ const isLoggedOrHashSent = (req, res, next) => {
  * @param next
  */
 const isNotLogged = (req, res, next) => {
+    debug('is not logged middleware called');
+
     const {
         session: { user = null }
     } = req;
@@ -110,6 +116,8 @@ const isNotLogged = (req, res, next) => {
  * @param next
  */
 const isAdmin = (req, res, next) => {
+    debug('is admin logged middleware called');
+
     const {
         session: { user = null }
     } = req;
@@ -130,6 +138,8 @@ const isAdmin = (req, res, next) => {
  * @param next
  */
 const isSameUser = (err = 'Error') => (req, res, next) => {
+    debug('is same user middleware called');
+
     const {
         session: { user = null }
     } = req;
@@ -324,6 +334,8 @@ const idParamNumeric = param('id')
  * @param next
  */
 const checkValidationErrors = (req, res, next) => {
+    debug('check validation errors middleware called');
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(UNPROCESSABLE_ENTITY).json({ errors: errors.mapped() });
@@ -334,6 +346,8 @@ const checkValidationErrors = (req, res, next) => {
 
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (err, req, res, next) => {
+    debug('error handler middleware called');
+    debug(err.status);
     if (err instanceof ValidationError) {
         switch (err.type) {
             case 'ModelValidation':
@@ -428,7 +442,7 @@ const errorHandler = (err, req, res, next) => {
             data: {}
         });
     } else {
-        res.status(INTERNAL_SERVER_ERROR).send({
+        res.status(err.status || INTERNAL_SERVER_ERROR).send({
             message: err.message,
             type: 'Unknown Error',
             data: {}

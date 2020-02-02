@@ -1,4 +1,6 @@
 const BaseModel = require('./BaseModel');
+const debug = require('debug')('bzu-wells-server-api:reading-model');
+
 const Well = require('./Well');
 
 class Reading extends BaseModel {
@@ -7,6 +9,7 @@ class Reading extends BaseModel {
     }
 
     async $beforeInsert() {
+        debug('before insert hook called');
         await super.$beforeInsert();
         const well = await Well.query()
             .select()

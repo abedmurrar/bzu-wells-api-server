@@ -2,6 +2,7 @@
 /* eslint-disable no-bitwise */
 const createError = require('http-errors');
 const crypto = require('crypto');
+const debug = require('debug')('bzu-wells-server-api:users-controller');
 const { User } = require('../models');
 const { isHashCorrect } = require('../helpers/utilFunctions');
 const { OK, CREATED, NO_CONTENT, FORBIDDEN, NOT_FOUND } = require('../helpers/http-status-codes');
@@ -19,6 +20,7 @@ class UserController {
      * @returns {Promise<void>}
      */
     static async getAllUsers(req, res, next) {
+        debug('get all users function called');
         try {
             const users = await User.query()
                 .columns('id', 'first_name', 'last_name', 'username', 'role')
@@ -39,6 +41,8 @@ class UserController {
      * @returns {Promise<void>}
      */
     static async getUserById(req, res, next) {
+        debug('get user by id function called');
+
         try {
             const user = await User.query()
                 .columns('id', 'first_name', 'last_name', 'username')
@@ -59,6 +63,8 @@ class UserController {
      * @returns {Promise<void>}
      */
     static async createUser(req, res, next) {
+        debug('create user function called');
+
         try {
             const createdUser = await User.query().insertGraphAndFetch(req.body);
             res.status(CREATED).json(createdUser);
@@ -75,6 +81,8 @@ class UserController {
      * @returns {Promise<void>}
      */
     static async updateMe(req, res, next) {
+        debug('update me function called');
+
         try {
             const {
                 session: {
@@ -100,6 +108,8 @@ class UserController {
      * @returns {Promise<void>}
      */
     static async updateUserById(req, res, next) {
+        debug('update user by id function called');
+
         try {
             const {
                 params: { id }
@@ -123,6 +133,8 @@ class UserController {
      * @returns {Promise<void>}
      */
     static async changePassword(req, res, next) {
+        debug('change password function called');
+
         try {
             const {
                 body: { newPassword },
@@ -149,6 +161,8 @@ class UserController {
      * @returns {Promise<void>}
      */
     static async softDeleteMe(req, res, next) {
+        debug('soft delete me function called');
+
         try {
             const {
                 session: {
@@ -174,6 +188,8 @@ class UserController {
      * @returns {Promise<void>}
      */
     static async softDeleteUserById(req, res, next) {
+        debug('soft delete user by id function called');
+
         try {
             const {
                 params: { id }
@@ -196,6 +212,8 @@ class UserController {
      * @param next
      */
     static async login(req, res, next) {
+        debug('login function called');
+
         try {
             const { username, password: entryPassword } = req.body;
             const user = await User.query()
@@ -222,6 +240,8 @@ class UserController {
      * @param next
      */
     static logout(req, res, next) {
+        debug('logout function called');
+
         req.session.destroy(err => {
             if (err) next(err);
             res.status(NO_CONTENT).json(null);
@@ -236,6 +256,8 @@ class UserController {
      * @param next
      */
     static getSession(req, res, next) {
+        debug('get session function called');
+
         if (req.session && req.session.user) {
             return res.status(OK).json(req.session.user);
         }
