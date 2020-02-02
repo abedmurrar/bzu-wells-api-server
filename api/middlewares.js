@@ -36,14 +36,15 @@ const { isHashCorrect } = require('../helpers/utilFunctions');
  * @param next
  */
 const isLogged = (req, res, next) => {
-    debug('is logged middleware called');
     const {
         session: { user = null }
     } = req;
 
     if (user && user.id) {
+        debug(`isLogged Middleware: ✅ Logged in as ${user.first_name} ${user.last_name}`);
         next();
     } else {
+        debug('isLogged Middleware: ❌  User is not logged in');
         next(createError(NOT_AUTHORIZED, 'Not authorized'));
     }
 };
@@ -64,8 +65,6 @@ const isLogged = (req, res, next) => {
  * @param next
  */
 const isLoggedOrHashSent = (req, res, next) => {
-    debug('is logged or hash sent middleware called');
-
     const {
         session: { user = null },
         body: { hash = null, reading },
@@ -76,8 +75,14 @@ const isLoggedOrHashSent = (req, res, next) => {
     const readingLine = `${id}#${reading}`;
 
     if ((user && user.id) || (hash && isHashCorrect(readingLine, hash))) {
+        debug(
+            user && user.id
+                ? `isLoggedOrHashSent Middleware: ✅ Logged in as ${user.first_name} ${user.last_name}`
+                : `isLoggedOrHashSent Middleware: ✅ hash = ${hash}`
+        );
         next();
     } else {
+        debug('isLoggedOrHashSent Middleware: ❌ user is not logged in nor hash sent');
         next(createError(NOT_AUTHORIZED, 'Not authorized'));
     }
 };
@@ -91,15 +96,15 @@ const isLoggedOrHashSent = (req, res, next) => {
  * @param next
  */
 const isNotLogged = (req, res, next) => {
-    debug('is not logged middleware called');
-
     const {
         session: { user = null }
     } = req;
 
     if (!(user && user.id)) {
+        debug('isNotLogged Middleware: ✅ user is not logged');
         next();
     } else {
+        debug('isNotLogged Middleware: ❌ user is logged');
         next(createError(FORBIDDEN, 'Forbidden'));
     }
 };
@@ -116,14 +121,15 @@ const isNotLogged = (req, res, next) => {
  * @param next
  */
 const isAdmin = (req, res, next) => {
-    debug('is admin logged middleware called');
-
     const {
         session: { user = null }
     } = req;
+
     if (user && user.id && user.role === 'admin') {
+        debug(`isAdmin Middleware: ✅ Admin Logged in as ${user.first_name} ${user.last_name}`);
         next();
     } else {
+        debug(`isAdmin Middleware: ❌  user is not an admin`);
         next(createError(FORBIDDEN, 'Forbidden'));
     }
 };
@@ -138,14 +144,14 @@ const isAdmin = (req, res, next) => {
  * @param next
  */
 const isSameUser = (err = 'Error') => (req, res, next) => {
-    debug('is same user middleware called');
-
     const {
         session: { user = null }
     } = req;
     if (user && user.id && parseInt(req.params.id, 10) === user.id) {
+        debug(`isSameUser Middleware: ✅ requested for same user`);
         next();
     } else {
+        debug(`isSameUser Middleware: ❌ not same user`);
         next(createError(FORBIDDEN, err));
     }
 };
@@ -334,13 +340,13 @@ const idParamNumeric = param('id')
  * @param next
  */
 const checkValidationErrors = (req, res, next) => {
-    debug('check validation errors middleware called');
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        debug('checkValidationErrors Middleware: ❌ validation errors exist');
         return res.status(UNPROCESSABLE_ENTITY).json({ errors: errors.mapped() });
     }
 
+    debug(`checkValidationErrors Middleware: ✅ no validation errors`);
     next();
 };
 
@@ -352,35 +358,35 @@ const errorHandler = (err, req, res, next) => {
         switch (err.type) {
             case 'ModelValidation':
                 res.status(BAD_REQUEST).send({
-                    message: err.message,
+                    msg: err.message,
                     type: err.type,
                     data: err.data
                 });
                 break;
             case 'RelationExpression':
                 res.status(BAD_REQUEST).send({
-                    message: err.message,
+                    msg: err.message,
                     type: 'Relation Expression',
                     data: {}
                 });
                 break;
             case 'UnallowedRelation':
                 res.status(BAD_REQUEST).send({
-                    message: err.message,
+                    msg: err.message,
                     type: err.type,
                     data: {}
                 });
                 break;
             case 'InvalidGraph':
                 res.status(BAD_REQUEST).send({
-                    message: err.message,
+                    msg: err.message,
                     type: err.type,
                     data: {}
                 });
                 break;
             default:
                 res.status(BAD_REQUEST).send({
-                    message: err.message,
+                    msg: err.message,
                     type: 'Unknown Validation Error',
                     data: {}
                 });
@@ -388,13 +394,13 @@ const errorHandler = (err, req, res, next) => {
         }
     } else if (err instanceof NotFoundError) {
         res.status(NOT_FOUND).send({
-            message: err.message,
+            msg: err.message,
             type: 'Not Found',
             data: {}
         });
     } else if (err instanceof UniqueViolationError) {
         res.status(CONFLICT).send({
-            message: err.message,
+            msg: err.message,
             type: 'Unique Violation',
             data: {
                 columns: err.columns,
@@ -404,7 +410,7 @@ const errorHandler = (err, req, res, next) => {
         });
     } else if (err instanceof NotNullViolationError) {
         res.status(BAD_REQUEST).send({
-            message: err.message,
+            msg: err.message,
             type: 'Not Null Violation',
             data: {
                 column: err.column,
@@ -413,7 +419,7 @@ const errorHandler = (err, req, res, next) => {
         });
     } else if (err instanceof ForeignKeyViolationError) {
         res.status(CONFLICT).send({
-            message: err.message,
+            msg: err.message,
             type: 'Foreign Key Violation',
             data: {
                 table: err.table,
@@ -422,7 +428,7 @@ const errorHandler = (err, req, res, next) => {
         });
     } else if (err instanceof CheckViolationError) {
         res.status(BAD_REQUEST).send({
-            message: err.message,
+            msg: err.message,
             type: 'Check Violation',
             data: {
                 table: err.table,
@@ -431,19 +437,19 @@ const errorHandler = (err, req, res, next) => {
         });
     } else if (err instanceof DataError) {
         res.status(BAD_REQUEST).send({
-            message: err.message,
+            msg: err.message,
             type: 'Invalid Data',
             data: {}
         });
     } else if (err instanceof DBError) {
         res.status(INTERNAL_SERVER_ERROR).send({
-            message: err.message,
+            msg: err.message,
             type: 'Unknown Database Error',
             data: {}
         });
     } else {
         res.status(err.status || INTERNAL_SERVER_ERROR).send({
-            message: err.message,
+            msg: err.message,
             type: 'Unknown Error',
             data: {}
         });
