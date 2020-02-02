@@ -16,7 +16,6 @@ const {
     errorHandler
 } = require('./middlewares');
 
-
 /**
  * Router Middlewares
  */
@@ -61,6 +60,5 @@ router.delete(
     checkValidationErrors,
     UserController.softDeleteUserById
 );
-
 
 module.exports = router;

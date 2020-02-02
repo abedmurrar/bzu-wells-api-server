@@ -1,4 +1,6 @@
 /* Module dependencies. */
+require('dotenv').config();
+
 const debug = require('debug')('bzu-wells-server-api:server');
 const http = require('http');
 const app = require('../app');
