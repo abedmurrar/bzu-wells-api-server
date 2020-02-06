@@ -16,10 +16,10 @@ exports.up = knex => {
                 table.string('last_name').notNullable();
                 table.string('password').notNullable();
                 table.string('salt').notNullable();
-                table
-                    .string('role')
-                    .notNullable()
-                    .defaultTo('user');
+                // table
+                //     .string('role')
+                //     .notNullable()
+                //     .defaultTo('user');
                 table
                     .dateTime('created_at')
                     .notNullable()

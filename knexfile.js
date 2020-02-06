@@ -48,11 +48,11 @@ module.exports = {
             filename: path.resolve('./production.sqlite3')
         },
         migrations: {
-            directory: path.resolve('migrations'),
+            directory: path.resolve('db', 'migrations'),
             tableName: 'knex_migrations_production'
+        },
+        seeds: {
+            directory: path.join(__dirname, 'db', 'seeds')
         }
-        // seeds: {
-        //     directory: path.join(__dirname, 'db', 'seeds')
-        // }
     }
 };
